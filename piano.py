@@ -1,5 +1,8 @@
+import time
 import pygame
 import sys
+
+import notas
 
 # Inicializar pygame
 pygame.init()
@@ -24,6 +27,11 @@ black_key_height = HEIGHT // 2
 # Cargar sonidos
 sounds = {key: pygame.mixer.Sound(f"{key}.wav") for key in keys + list(filter(None, black_keys))}
 
+def log_note(note):
+    elapsed_time = time.time() - start_time
+    with open("notes.txt", "a+") as file:
+        file.write(f"{elapsed_time:.2f} - {note}\n")
+
 # Dibujar teclas del piano
 def draw_piano():
     # Dibujar teclas blancas
@@ -44,6 +52,8 @@ def draw_piano():
 
 # Reproducir sonido
 def play_sound(key):
+    if RECORDING:
+        log_note(key)
     if key in sounds:
         sounds[key].play()
 
@@ -61,9 +71,14 @@ def get_key_from_position(x, y):
         return keys[key_index]
     return None
 
+# Variables globales
+start_time = 0
+RECORDING = False
 # Bucle principal
 if __name__ == "__main__":
+    notas.generate_piano_notes()
     running = True
+    RECORDING = False
     while running:
         screen.fill(GRAY)
         draw_piano()
@@ -83,6 +98,11 @@ if __name__ == "__main__":
                     pygame.K_u: "A#4", pygame.K_j: "B4", pygame.K_k: "C5", pygame.K_o: "C#5", pygame.K_l: "D5", 
                     pygame.K_p: "D#5"
                 }
+                if event.key == pygame.K_SPACE:
+                    RECORDING = not RECORDING
+                    print("RECORDING" if RECORDING else "NOT RECORDING")
+                    start_time = time.time()
+                    
                 if event.key in key_mapping:
                     play_sound(key_mapping[event.key])
 
