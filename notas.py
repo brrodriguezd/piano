@@ -38,7 +38,7 @@ def generate_wave(frequency, duration=1.0, sample_rate=44100, amplitude=0.5):
     elif len(envelope) < len(wave):
         envelope = np.pad(envelope, (0, len(wave) - len(envelope)), 'edge')
         
-    return wave# * envelope
+    return wave * envelope
 
 def play_wave(wave, sample_rate=44100):
     """
@@ -48,9 +48,8 @@ def play_wave(wave, sample_rate=44100):
     wave (numpy.ndarray): The waveform to play
     sample_rate (int): Number of samples per second
     """
-    sd.stop()  # Stop any previous playback
-    sd.play(wave, sample_rate, blocking=True)
-    # sd.wait()  # Wait until the sound has finished playing
+    sd.play(wave, sample_rate)
+    sd.wait()  # Wait until the sound has finished playing
 
 def generate_note(note, duration=1.0, sample_rate=44100, amplitude=0.5):
     """
