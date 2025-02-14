@@ -45,34 +45,29 @@ def save_wave(wave, filename, sample_rate=44100):
 
 # Dictionary of musical notes and their frequencies (A4 = 440Hz)
 NOTES = {
-    'A4': 440.0,
-    'A#4': 466.16,
-    'B4': 493.88,
-    'C5': 523.25,
+    "C4": 261.63,
+    "C#4": 277.18,
+    "D4": 293.66,
+    "D#4": 311.13,
+    "E4": 329.63,
+    "F4": 349.23,
+    "F#4": 369.99,
+    "G4": 392.00,
+    "G#4": 415.30,
+    "A4": 440.00,
+    "A#4": 466.16,
+    "B4": 493.88,
+    "C5": 523.25,
     'C#5': 554.37,
     'D5': 587.33,
     'D#5': 622.25,
-    'E5': 659.25,
-    'F5': 698.46,
-    'F#5': 739.99,
-    'G5': 783.99,
-    'G#5': 830.61,
-    'A5': 880.0
 }
 
 # Example usage
 if __name__ == "__main__":
-    # Generate and play A4 (440 Hz)
-    wave_a4 = generate_wave(NOTES['A4'], duration=0.5)
-    print("Playing A4 (440 Hz)")
-    play_wave(wave_a4)
-    
-    # Save it to a file
-    save_wave(wave_a4, "A4_note.wav")
-    
     # Generate a sequence of notes
-    sequence = ['A4', 'C5', 'E5', 'A5']
-    for note in sequence:
-        wave = generate_wave(NOTES[note], duration=0.3)
-        print(f"Playing {note} ({NOTES[note]} Hz)")
+    for note in NOTES:
+        wave = generate_wave(NOTES[note], duration=0.2)
+        print(f"Playing and saving {note}.wav ({NOTES[note]} Hz)")
         play_wave(wave)
+        save_wave(wave, f"{note}.wav")
