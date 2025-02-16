@@ -3,3 +3,6 @@
 *.wav
 
 __pycache__/
+
+
+.ropeproject/
