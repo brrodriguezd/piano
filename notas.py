@@ -7,13 +7,13 @@ import sounddevice as sd
 def generate_wave(frequency, duration=1.0, sample_rate=44100, amplitude=0.5):
     """
     Generate a sine wave with the given frequency and duration.
-    
+
     Parameters:
     frequency (float): Frequency of the wave in Hz
     duration (float): Duration of the sound in seconds
     sample_rate (int): Number of samples per second
     amplitude (float): Amplitude of the wave (between 0 and 1)
-    
+
     Returns:
     numpy.ndarray: The generated waveform
     """
@@ -23,27 +23,27 @@ def generate_wave(frequency, duration=1.0, sample_rate=44100, amplitude=0.5):
     attack_time = min(0.01, duration * 0.1)  # 10ms or 10% of duration, whichever is shorter
     release_time = attack_time
     sustain_time = duration - (attack_time + release_time)
-    
+
     # Create the envelope with proper timing
     attack = np.linspace(0, 1, int(sample_rate * attack_time))
     sustain = np.ones(int(sample_rate * sustain_time))
     release = np.linspace(1, 0, int(sample_rate * release_time))
-    
+
     # Combine envelope parts
     envelope = np.concatenate([attack, sustain, release])
-    
+
     # Ensure envelope matches wave length exactly
     if len(envelope) > len(wave):
         envelope = envelope[:len(wave)]
     elif len(envelope) < len(wave):
         envelope = np.pad(envelope, (0, len(wave) - len(envelope)), 'edge')
-        
+
     return wave * envelope
 
 def play_wave(wave, sample_rate=44100):
     """
     Play the generated wave through the default audio output.
-    
+
     Parameters:
     wave (numpy.ndarray): The waveform to play
     sample_rate (int): Number of samples per second
@@ -54,13 +54,13 @@ def play_wave(wave, sample_rate=44100):
 def generate_note(note, duration=1.0, sample_rate=44100, amplitude=0.5):
     """
     Generate a note with the given pitch and duration.
-    
+
     Parameters:
     note (str): The note to generate (e.g., "A4")
     duration (float): Duration of the sound in seconds
     sample_rate (int): Number of samples per second
     amplitude (float): Amplitude of the wave (between 0 and 1)
-    
+
     Returns:
     numpy.ndarray: The generated waveform
     """
@@ -72,7 +72,7 @@ def generate_note(note, duration=1.0, sample_rate=44100, amplitude=0.5):
 def save_wave(wave, filename, sample_rate=44100):
     """
     Save the wave to a WAV file.
-    
+
     Parameters:
     wave (numpy.ndarray): The waveform to save
     filename (str): Output filename (should end with .wav)
@@ -132,13 +132,13 @@ NOTES = {
     "D#5": 622.25,
 }
 
-def parse_note_file(filename: str) -> List[Tuple[float, str]]:
+def parse_note_file(filename: str) -> List[Tuple[float, str, float]]:
     """
     Read and parse a file containing timestamped notes.
-    
+
     Parameters:
     filename: Path to the file containing notes
-    
+
     Returns:
     List of tuples containing (timestamp, note)
     """
@@ -151,15 +151,15 @@ def parse_note_file(filename: str) -> List[Tuple[float, str]]:
                 timestamp = float(parts[0].strip())
                 note = parts[1].strip()
                 raw_notes.append((timestamp, note))
-    
+
     # Sort notes by timestamp
     raw_notes.sort(key=lambda x: x[0])
-    
+
     # Calculate durations based on the time until the next note
     notes_with_duration = []
     for i in range(len(raw_notes)):
         timestamp, note = raw_notes[i]
-        
+
         # Calculate duration until next note
         if i < len(raw_notes) - 1:
             next_timestamp = raw_notes[i + 1][0]
@@ -167,9 +167,9 @@ def parse_note_file(filename: str) -> List[Tuple[float, str]]:
         else:
             # For the last note, use a default duration of 0.3 seconds
             duration = 0.3
-            
+
         notes_with_duration.append((timestamp, note, duration))
-    
+
     return notes_with_duration
 
 def play_sequence(filename: str):
@@ -177,22 +177,22 @@ def play_sequence(filename: str):
     Play the sequence with precise timing and durations.
     """
     # Parse notes with their calculated durations
-    notes = parse_note_file(filename)
+    parsed_notes = parse_note_file(filename)
     start_time = time.time()
-    
+
     print("Starting playback...")
     print("Timestamp | Note | Duration")
     print("-" * 30)
-    
-    for timestamp, note, duration in notes:
+
+    for timestamp, note, duration in parsed_notes:
         # Calculate wait time
         current_time = time.time() - start_time
         wait_time = timestamp - current_time
-        
+
         # Wait if necessary
         if wait_time > 0:
             time.sleep(wait_time)
-        
+
         # Play the note with its calculated duration
         if note in NOTES.keys():
             wave = generate_note(note, duration)
@@ -207,8 +207,7 @@ def generate_piano_notes():
         print("Generando las notas del piano")
         wave = generate_wave(NOTES[note], duration=0.2)
         print(f"Saving {note}.wav ({NOTES[note]} Hz)")
-        save_wave(wave, f"{note}.wav")
+        save_wave(wave, f"notes/{note}.wav")
 
 if __name__ == "__main__":
     play_sequence("notes.txt")
-    
