@@ -97,11 +97,10 @@ class PianoKey:
     def draw(self, screen):
         pygame.draw.rect(screen, self.current_color, self.rect)
         pygame.draw.rect(screen, BLACK, self.rect, 2)
-        if not self.is_black:  # Only draw text for white keys
-            font = pygame.font.Font(None, 36)
-            text = font.render(self.note, True, BLACK)
-            text_rect = text.get_rect(center=(self.rect.centerx, self.rect.centery + 50))
-            screen.blit(text, text_rect)
+        font = pygame.font.Font(None, 36 if not self.is_black else 24)
+        text = font.render(self.note, True, BLACK if not self.is_black else WHITE)
+        text_rect = text.get_rect(center=(self.rect.centerx, self.rect.centery + 50))
+        screen.blit(text, text_rect)
 
 # Configuración de teclas del piano
 keys = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5"]
