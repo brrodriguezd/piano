@@ -3,4 +3,4 @@ numpy==2.2.3
 pycparser==2.22
 pygame==2.6.1
 scipy==1.15.1
-sounddevice==0.5.
+sounddevice==0.5.1

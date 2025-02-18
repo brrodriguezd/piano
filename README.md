@@ -13,7 +13,7 @@ cd piano
 ### 2. Instalar dependencias
 Asegúrate de tener Python 3 instalado. Luego, instala las bibliotecas necesarias:
 ```bash
-pip install pygame numpy sounddevice scipy
+pip install -r requirements.txt
 ```
 
 ## Uso
